@@ -1,0 +1,315 @@
+<div class="persons-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Kişi Yönetimi</h1>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="showAddPersonForm()">
+        <i class="icon">+</i> Yeni Kişi Ekle
+      </button>
+      <button class="btn btn-secondary" (click)="logout()">
+        <i class="icon">🚪</i> Çıkış Yap
+      </button>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-container">
+    <input 
+      type="text" 
+      [(ngModel)]="searchTerm" 
+      (input)="searchPersons()"
+      placeholder="Ad, soyad veya TC kimlik no ile ara..."
+      class="search-input"
+    >
+  </div>
+
+  <!-- Add Person Form -->
+  @if (showAddForm) {
+    <div class="form-container">
+      <div class="form-card">
+        <h2>Yeni Kişi Ekle</h2>
+        <form (ngSubmit)="addPerson()">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tcno">TC Kimlik No *</label>
+              <input 
+                type="text" 
+                id="tcno" 
+                [(ngModel)]="newPerson.tcno" 
+                name="tcno"
+                maxlength="11"
+                required
+                class="form-input"
+              >
+            </div>
+            <div class="form-group">
+              <label for="ad">Ad *</label>
+              <input 
+                type="text" 
+                id="ad" 
+                [(ngModel)]="newPerson.ad" 
+                name="ad"
+                required
+                class="form-input"
+              >
+            </div>
+            <div class="form-group">
+              <label for="soyad">Soyad *</label>
+              <input 
+                type="text" 
+                id="soyad" 
+                [(ngModel)]="newPerson.soyad" 
+                name="soyad"
+                required
+                class="form-input"
+              >
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="dogumTarihi">Doğum Tarihi *</label>
+              <input 
+                type="date" 
+                id="dogumTarihi" 
+                [(ngModel)]="newPerson.dogumTarihi" 
+                name="dogumTarihi"
+                required
+                class="form-input"
+              >
+            </div>
+            <div class="form-group">
+              <label for="olumTarihi">Ölüm Tarihi</label>
+              <input 
+                type="date" 
+                id="olumTarihi" 
+                [(ngModel)]="newPerson.olumTarihi" 
+                name="olumTarihi"
+                class="form-input"
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="images">Resimler</label>
+            <input 
+              type="file" 
+              id="images" 
+              (change)="onImageSelected($event)"
+              multiple
+              accept="image/*"
+              class="form-input"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="biyografi">Biyografi</label>
+            <quill-editor
+              [(ngModel)]="newPerson.biyografi"
+              name="biyografi"
+              [styles]="{height: '200px'}"
+              format="html">
+            </quill-editor>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Kişi Ekle</button>
+            <button type="button" class="btn btn-secondary" (click)="cancelForm()">İptal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Edit Person Form -->
+  @if (showEditForm) {
+    <div class="form-container">
+      <div class="form-card">
+        <h2>Kişi Düzenle</h2>
+        <form (ngSubmit)="updatePerson()">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-ad">Ad *</label>
+              <input 
+                type="text" 
+                id="edit-ad" 
+                [(ngModel)]="editPerson.ad" 
+                name="edit-ad"
+                required
+                class="form-input"
+              >
+            </div>
+            <div class="form-group">
+              <label for="edit-soyad">Soyad *</label>
+              <input 
+                type="text" 
+                id="edit-soyad" 
+                [(ngModel)]="editPerson.soyad" 
+                name="edit-soyad"
+                required
+                class="form-input"
+              >
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit-dogumTarihi">Doğum Tarihi *</label>
+              <input 
+                type="date" 
+                id="edit-dogumTarihi" 
+                [(ngModel)]="editPerson.dogumTarihi" 
+                name="edit-dogumTarihi"
+                required
+                class="form-input"
+              >
+            </div>
+            <div class="form-group">
+              <label for="edit-olumTarihi">Ölüm Tarihi</label>
+              <input 
+                type="date" 
+                id="edit-olumTarihi" 
+                [(ngModel)]="editPerson.olumTarihi" 
+                name="edit-olumTarihi"
+                class="form-input"
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-images">Yeni Resimler Ekle</label>
+            <input 
+              type="file" 
+              id="edit-images" 
+              (change)="onImageSelected($event)"
+              multiple
+              accept="image/*"
+              class="form-input"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="edit-biyografi">Biyografi</label>
+            <quill-editor
+              [(ngModel)]="editPerson.biyografi"
+              name="edit-biyografi"
+              [styles]="{height: '200px'}"
+              format="html">
+            </quill-editor>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+            <button type="button" class="btn btn-secondary" (click)="cancelForm()">İptal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Persons List -->
+  <div class="persons-list">
+    <div class="list-header">
+      <h3>Kişiler ({{filteredPersons.length}})</h3>
+    </div>
+    
+    @if (filteredPersons.length > 0) {
+      <div class="persons-grid">
+        <div class="person-card" *ngFor="let person of filteredPersons">
+          <div class="person-header">
+            <h4>{{person.ad}} {{person.soyad}}</h4>
+            <div class="person-actions">
+              <button class="btn btn-sm btn-primary" (click)="showEditPersonForm(person)">
+                <i class="icon">✏️</i>
+              </button>
+              <button class="btn btn-sm btn-danger" (click)="deletePerson(person)">
+                <i class="icon">🗑️</i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="person-info">
+            <p><strong>TC No:</strong> {{person.tcno}}</p>
+            <p><strong>Doğum:</strong> {{formatDate(person.dogumTarihi)}}</p>
+            @if (person.olumTarihi) {
+              <p><strong>Ölüm:</strong> {{formatDate(person.olumTarihi)}}</p>
+            }
+          </div>
+<!-- 
+          <div class="person-bio" *ngIf="person.biyografi">
+            <h5>Biyografi</h5>
+            <div class="bio-content ql-editor" [innerHTML]="person.biyografi"></div>
+          </div> -->
+
+          <!-- Images Section (sadece düzenleme modunda ve seçili kişi için) -->
+          @if (showEditForm && selectedPerson?.tcno === person.tcno) {
+          <div class="person-images">
+            <h5>Resimler ({{personImages[person.tcno]?.length || 0}}):</h5>
+
+            <div class="image-upload">
+              <input 
+                type="file" 
+                [id]="'image-upload-' + person.id"
+                (change)="onImageSelectedForPerson($event, person.tcno)"
+                multiple
+                accept="image/*"
+                class="image-upload-input"
+              >
+              <label [for]="'image-upload-' + person.id" class="image-upload-label">
+                <i class="icon">📷</i> Resim Ekle
+              </label>
+            </div>
+
+            @if (personImages[person.tcno] && personImages[person.tcno].length > 0) {
+              <div class="images-grid">
+                <div class="image-item" *ngFor="let image of personImages[person.tcno]; let i = index">
+                  <img [src]="getImageUrl(person.tcno, image)" 
+                       [alt]="person.ad + ' ' + person.soyad" 
+                       class="person-image"
+                       (error)="onImageError($event, image, person.tcno)"
+                       (load)="onImageLoad($event, image, person.tcno)">
+                  <div class="image-info">
+                    <small>{{image}}</small>
+                  </div>
+                  <button class="btn btn-sm btn-danger remove-image" (click)="removeImage(person.tcno, image)">
+                    <i class="icon">❌</i>
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <div class="no-images">
+                <p>Henüz resim eklenmemiş</p>
+              </div>
+            }
+          </div>
+          }
+
+          <!-- QR Code Section -->
+          <div class="person-qr">
+            <h5>QR Kod:</h5>
+            <div class="qr-container">
+              @if (person.qrKod) {
+                <img [src]="getQRCodeUrl(person.tcno)" [alt]="'QR Kod - ' + person.ad + ' ' + person.soyad" class="qr-image">
+                <button class="btn btn-sm btn-primary" (click)="downloadQRCode(person.tcno, person.ad, person.soyad)">
+                  <i class="icon">⬇️</i> İndir
+                </button>
+              } @else {
+                <div class="no-qr">
+                  <p>QR kod oluşturulmamış</p>
+                  <button class="btn btn-sm btn-success" (click)="generateQRCode(person.tcno)">
+                    <i class="icon">🔗</i> QR Kod Oluştur
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="no-persons">
+        <p>Henüz kişi eklenmemiş.</p>
+        <button class="btn btn-primary" (click)="showAddPersonForm()">İlk Kişiyi Ekle</button>
+      </div>
+    }
+  </div>
+</div>

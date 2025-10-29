@@ -1,0 +1,38 @@
+<div class="person-detail-wrapper">
+  <div *ngIf="isLoading" class="status-message">Yükleniyor...</div>
+  <div *ngIf="error" class="status-message error">{{ error }}</div>
+
+  <div *ngIf="person" class="person-card">
+    <h2>{{ person.ad }} {{ person.soyad }}</h2>
+    <p><strong>TC No:</strong> {{ person.tcno }}</p>
+    <p><strong>Doğum Tarihi:</strong> {{ person.dogumTarihi | date:'dd.MM.yyyy' }}</p>
+    <p *ngIf="person.olumTarihi"><strong>Ölüm Tarihi:</strong> {{ person.olumTarihi | date:'dd.MM.yyyy'}}</p>
+
+    <hr>
+    <h3>Biyografi</h3>
+    <div *ngIf="person.biyografi; else noBio" class="bio-content ql-editor" [innerHTML]="person.biyografi"></div>
+    <ng-template #noBio>
+      <p>Biyografi eklenmemiş.</p>
+    </ng-template>
+
+    <hr>
+    <h3>Resimler</h3>
+    <ng-container *ngIf="images.length > 0">
+      <lightgallery [settings]="settings" [onBeforeSlide]="onBeforeSlide" class="gallery-wrapper">
+        <a *ngFor="let img of images" 
+           [attr.href]="img"
+           [attr.data-src]="img" 
+           [attr.data-sub-html]="'<h4>' + person.ad + ' ' + person.soyad + '</h4>'" 
+           class="gallery-item">
+          <img [src]="img" [alt]="person.ad + ' ' + person.soyad" class="person-image">
+        </a>
+      </lightgallery>
+    </ng-container>
+
+    <hr>
+    <h3>QR Kod</h3>
+    <div class="qr-container">
+      <img [src]="getQRCodeUrl()" [alt]="'QR Kod - ' + person.ad + ' ' + person.soyad" class="qr-image">
+    </div>
+  </div>
+</div>

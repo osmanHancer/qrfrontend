@@ -1,0 +1,27 @@
+<div class="login-container">
+  <h2>Giriş Yap</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      E-posta
+      <input type="email" formControlName="email" placeholder="ornek@mail.com" />
+    </label>
+    <div class="error" *ngIf="form.controls.email.touched && form.controls.email.invalid">
+      Geçerli bir e-posta giriniz.
+    </div>
+
+    <label>
+      Şifre
+      <input type="password" formControlName="password" placeholder="••••" />
+    </label>
+    <div class="error" *ngIf="form.controls.password.touched && form.controls.password.invalid">
+      Şifre en az 4 karakter olmalı.
+    </div>
+
+    <button type="submit" [disabled]="loading()">Giriş</button>
+  </form>
+
+  <div class="alert" *ngIf="error()">{{ error() }}</div>
+</div>
+
+

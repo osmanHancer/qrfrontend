@@ -223,6 +223,14 @@
             border-radius: 8px;
           }
 
+          .person-video {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #000;
+          }
+
           .image-info {
             position: absolute;
             bottom: 0;

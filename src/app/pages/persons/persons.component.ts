@@ -324,8 +324,13 @@ export class PersonsComponent implements OnInit {
   }
 
   onImageError(event: any, image: string, tcno: string) {
-    console.error(`Resim yüklenemedi: ${image} (${tcno})`, event);
-    alert(`Resim yüklenemedi: ${image}`);
+    console.error(`Medya yüklenemedi: ${image} (${tcno})`, event);
+    alert(`Medya yüklenemedi: ${image}`);
+  }
+
+  isVideoFile(filename: string): boolean {
+    const ext = filename.toLowerCase().split('.').pop();
+    return ['mp4', 'mov', 'avi', 'mkv', 'webm'].includes(ext || '');
   }
 
   getQRCodeUrl(tcno: string): string {

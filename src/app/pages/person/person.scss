@@ -1,51 +1,216 @@
 @import url('https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lightgallery.css');
 @import url('https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lg-zoom.css');
 @import url('https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lg-thumbnail.css');
+@import url('https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lg-video.css');
 
-body {
+/* Ana kart */
+.person-detail-wrapper {
+  max-width: 850px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+  font-family: 'Inter', sans-serif;
+  color: #2c3e50;
+}
+
+/* Yükleniyor & hata mesajları */
+.status-message {
+  text-align: center;
+  font-size: 1.1rem;
+  margin: 20px 0;
+}
+
+.status-message.error {
+  color: #e74c3c;
+}
+
+/* Başlık kısmı */
+.person-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.avatar-icon {
+  font-size: 3rem;
+  color: #3498db;
+}
+
+.person-header h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #34495e;
   margin: 0;
 }
 
-.person-detail-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.person-card {
-  max-width: 600px;
-  width: 100%;
-  background: #fff;
-  padding: 20px;
+/* Bilgi kısmı */
+.info-section {
+  background: #f9fafb;
+  padding: 16px;
   border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  margin-bottom: 16px;
 }
 
-.images-grid {
+.info-section p {
+  margin: 6px 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-section i {
+  color: #3498db;
+  width: 20px;
+}
+
+/* Biyografi */
+h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 16px 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #2c3e50;
+}
+
+.bio-content {
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  line-height: 1.6;
+}
+
+.no-bio {
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+/* Galeri */
+.gallery-wrapper {
   display: flex;
   flex-wrap: wrap;
+  gap: 12px;
   justify-content: center;
 }
 
 .gallery-item {
-  margin: 5px;
+  display: block;
+  width: calc(33.333% - 12px);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out;
+}
+
+.gallery-item:hover {
+  transform: scale(1.05);
 }
 
 .person-image {
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  height: 200px;
   object-fit: cover;
-  border-radius: 6px;
 }
 
+.person-video {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #000;
+}
+
+.video-thumbnail {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 10px;
+
+  .person-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .video-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    pointer-events: none;
+    transition: background 0.3s ease;
+
+    i {
+      margin-left: 4px; // Play icon'u biraz sağa kaydır
+    }
+  }
+
+  &:hover .video-overlay {
+    background: rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* QR */
 .qr-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
+  text-align: center;
+  margin-top: 16px;
 }
 
 .qr-image {
-  max-width: 200px;
-  width: 100%;
+  width: 180px;
+  height: 180px;
+  border: 4px solid #ecf0f1;
+  border-radius: 16px;
+  padding: 8px;
+  background-color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .person-detail-wrapper {
+    margin: 20px;
+    padding: 16px;
+  }
+
+  .gallery-item {
+    width: calc(50% - 12px);
+  }
+
+  .person-image {
+    height: 150px;
+  }
+
+  .person-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .avatar-icon {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-item {
+    width: 100%;
+  }
+
+  .qr-image {
+    width: 140px;
+    height: 140px;
+  }
 }

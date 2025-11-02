@@ -3,34 +3,53 @@
   <div *ngIf="error" class="status-message error">{{ error }}</div>
 
   <div *ngIf="person" class="person-card">
-    <h2>{{ person.ad }} {{ person.soyad }}</h2>
-    <p><strong>TC No:</strong> {{ person.tcno }}</p>
-    <p><strong>Doğum Tarihi:</strong> {{ person.dogumTarihi | date:'dd.MM.yyyy' }}</p>
-    <p *ngIf="person.olumTarihi"><strong>Ölüm Tarihi:</strong> {{ person.olumTarihi | date:'dd.MM.yyyy'}}</p>
+    <div class="person-header">
+      <i class="fa-solid fa-user-circle avatar-icon"></i>
+      <h2>{{ person.ad }} {{ person.soyad }}</h2>
+    </div>
+
+    <div class="info-section">
+      <p><i class="fa-solid fa-id-card"></i> <strong>TC No:</strong> {{ person.tcno }}</p>
+      <p><i class="fa-solid fa-calendar"></i> <strong>Doğum Tarihi:</strong> {{ person.dogumTarihi | date:'dd.MM.yyyy' }}</p>
+      <p *ngIf="person.olumTarihi"><i class="fa-solid fa-dove"></i> <strong>Ölüm Tarihi:</strong> {{ person.olumTarihi | date:'dd.MM.yyyy'}}</p>
+    </div>
 
     <hr>
-    <h3>Biyografi</h3>
+    <h3><i class="fa-solid fa-book"></i> Biyografi</h3>
     <div *ngIf="person.biyografi; else noBio" class="bio-content ql-editor" [innerHTML]="person.biyografi"></div>
     <ng-template #noBio>
-      <p>Biyografi eklenmemiş.</p>
+      <p class="no-bio"><i class="fa-solid fa-pen"></i> Biyografi eklenmemiş.</p>
     </ng-template>
 
     <hr>
-    <h3>Resimler</h3>
-    <ng-container *ngIf="images.length > 0">
+    <h3><i class="fa-solid fa-image"></i> Fotoğraflar ve Videolar</h3>
+    <ng-container *ngIf="mediaFiles.length > 0; else noImages">
       <lightgallery [settings]="settings" [onBeforeSlide]="onBeforeSlide" class="gallery-wrapper">
-        <a *ngFor="let img of images" 
-           [attr.href]="img"
-           [attr.data-src]="img" 
-           [attr.data-sub-html]="'<h4>' + person.ad + ' ' + person.soyad + '</h4>'" 
-           class="gallery-item">
-          <img [src]="img" [alt]="person.ad + ' ' + person.soyad" class="person-image">
+        <a *ngFor="let media of mediaFiles"
+           [attr.data-src]="media.isVideo ? undefined : media.url"
+           [attr.data-video]="media.isVideo ? getVideoDataAttribute(media.url, media.filename) : undefined"
+           [attr.data-sub-html]="'<h4>' + person.ad + ' ' + person.soyad + '</h4>'"
+           [attr.href]="media.isVideo ? media.url : media.url"
+           class="gallery-item"
+           (click)="media.isVideo && openVideo(media.url, $event)">
+          <img *ngIf="!media.isVideo" [src]="media.url" [alt]="person.ad + ' ' + person.soyad" class="person-image">
+          <div *ngIf="media.isVideo" class="video-thumbnail">
+            <video [src]="media.url" class="person-video" preload="metadata" muted>
+              <source [src]="media.url" [type]="getVideoType(media.filename)">
+            </video>
+            <div class="video-overlay">
+              <i class="fa-solid fa-play"></i>
+            </div>
+          </div>
         </a>
       </lightgallery>
     </ng-container>
+    <ng-template #noImages>
+      <p class="no-bio"><i class="fa-regular fa-image"></i> Henüz fotoğraf veya video eklenmemiş.</p>
+    </ng-template>
 
     <hr>
-    <h3>QR Kod</h3>
+    <h3><i class="fa-solid fa-qrcode"></i> QR Kod</h3>
     <div class="qr-container">
       <img [src]="getQRCodeUrl()" [alt]="'QR Kod - ' + person.ad + ' ' + person.soyad" class="qr-image">
     </div>

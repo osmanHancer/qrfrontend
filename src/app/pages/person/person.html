@@ -9,9 +9,16 @@
     </div>
 
     <div class="info-section">
-      <p><i class="fa-solid fa-id-card"></i> <strong>TC No:</strong> {{ person.tcno }}</p>
+      <!-- <p><i class="fa-solid fa-id-card"></i> <strong>TC No:</strong> {{ person.tcno }}</p> -->
       <p><i class="fa-solid fa-calendar"></i> <strong>Doğum Tarihi:</strong> {{ person.dogumTarihi | date:'dd.MM.yyyy' }}</p>
       <p *ngIf="person.olumTarihi"><i class="fa-solid fa-dove"></i> <strong>Ölüm Tarihi:</strong> {{ person.olumTarihi | date:'dd.MM.yyyy'}}</p>
+      <p *ngIf="person.konum">
+        <i class="fa-solid fa-location-dot"></i> <strong>Konum:</strong> 
+        <a *ngIf="isCoordinateFormat(person.konum)" [href]="getGoogleMapsUrl(person.konum)" target="_blank" class="location-link">
+          {{ person.konum }} <i class="fa-solid fa-external-link"></i>
+        </a>
+        <span *ngIf="!isCoordinateFormat(person.konum)">{{ person.konum }}</span>
+      </p>
     </div>
 
     <hr>
@@ -24,29 +31,53 @@
     <hr>
     <h3><i class="fa-solid fa-image"></i> Fotoğraflar ve Videolar</h3>
     <ng-container *ngIf="mediaFiles.length > 0; else noImages">
-      <lightgallery [settings]="settings" [onBeforeSlide]="onBeforeSlide" class="gallery-wrapper">
-        <a *ngFor="let media of mediaFiles"
-           [attr.data-src]="media.isVideo ? undefined : media.url"
-           [attr.data-video]="media.isVideo ? getVideoDataAttribute(media.url, media.filename) : undefined"
-           [attr.data-sub-html]="'<h4>' + person.ad + ' ' + person.soyad + '</h4>'"
-           [attr.href]="media.isVideo ? media.url : media.url"
-           class="gallery-item"
-           (click)="media.isVideo && openVideo(media.url, $event)">
+      <div class="gallery-wrapper">
+        <div *ngFor="let media of mediaFiles; let i = index" 
+             class="gallery-item" 
+             (click)="openModal(i)">
           <img *ngIf="!media.isVideo" [src]="media.url" [alt]="person.ad + ' ' + person.soyad" class="person-image">
           <div *ngIf="media.isVideo" class="video-thumbnail">
-            <video [src]="media.url" class="person-video" preload="metadata" muted>
+            <video [src]="media.url" class="person-video-thumb" preload="metadata" muted>
               <source [src]="media.url" [type]="getVideoType(media.filename)">
             </video>
             <div class="video-overlay">
               <i class="fa-solid fa-play"></i>
             </div>
           </div>
-        </a>
-      </lightgallery>
+        </div>
+      </div>
     </ng-container>
     <ng-template #noImages>
       <p class="no-bio"><i class="fa-regular fa-image"></i> Henüz fotoğraf veya video eklenmemiş.</p>
     </ng-template>
+
+    <!-- Swiper Modal -->
+    <div *ngIf="showModal" class="swiper-modal" (click)="closeModal()">
+      <div class="swiper-modal-content" (click)="$event.stopPropagation()">
+        <button class="modal-close" (click)="closeModal()">&times;</button>
+        <swiper-container 
+          #swiperContainer
+          [attr.initial-slide]="selectedIndex"
+          navigation="true"
+          pagination="true"
+          keyboard="true"
+          loop="false"
+          class="swiper-container">
+          <swiper-slide *ngFor="let media of mediaFiles">
+            <img *ngIf="!media.isVideo" 
+                 [src]="media.url" 
+                 [alt]="person.ad + ' ' + person.soyad"
+                 class="modal-image">
+            <video *ngIf="media.isVideo" 
+                   [src]="media.url" 
+                   controls
+                   class="modal-video">
+              <source [src]="media.url" [type]="getVideoType(media.filename)">
+            </video>
+          </swiper-slide>
+        </swiper-container>
+      </div>
+    </div>
 
     <hr>
     <h3><i class="fa-solid fa-qrcode"></i> QR Kod</h3>

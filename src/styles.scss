@@ -1,5 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
 /* Quill tema stilleri */
-@import 'quill/dist/quill.core.css';
-@import 'quill/dist/quill.snow.css';
+@import url('quill/dist/quill.core.css');
+@import url('quill/dist/quill.snow.css');
+
+/* Swiper CSS'leri */
+@import url('swiper/css');
+@import url('swiper/css/navigation');
+@import url('swiper/css/pagination');

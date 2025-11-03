@@ -1,7 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { QuillModule } from 'ngx-quill';
+import { QuillModule, QuillEditorComponent } from 'ngx-quill';
 import { PersonsService, PersonDto, CreatePersonDto, UpdatePersonDto } from '../../services/persons.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
@@ -14,6 +14,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./persons.component.scss']
 })
 export class PersonsComponent implements OnInit {
+  @ViewChild('editQuillEditor', { static: false }) editQuillEditor!: QuillEditorComponent;
+  
   persons: PersonDto[] = [];
   filteredPersons: PersonDto[] = [];
   searchTerm: string = '';
@@ -24,14 +26,20 @@ export class PersonsComponent implements OnInit {
   personImages: { [tcno: string]: string[] } = {};
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  
+  constructor(
+    private personsService: PersonsService,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
+  ) {}
   // Form data
   newPerson: CreatePersonDto = {
-    tcno: '',
     ad: '',
     soyad: '',
     dogumTarihi: '',
     olumTarihi: '',
-    biyografi: ''
+    biyografi: '',
+    konum: ''
   };
 
   editPerson: UpdatePersonDto = {
@@ -39,13 +47,10 @@ export class PersonsComponent implements OnInit {
     soyad: '',
     dogumTarihi: '',
     olumTarihi: '',
-    biyografi: ''
+    biyografi: '',
+    konum: ''
   };
 
-  constructor(
-    private personsService: PersonsService,
-    private authService: AuthService
-  ) {}
 
   ngOnInit() {
     this.loadPersons();
@@ -91,13 +96,27 @@ export class PersonsComponent implements OnInit {
     this.showAddForm = true;
     this.showEditForm = false;
     this.newPerson = {
-      tcno: '',
       ad: '',
       soyad: '',
       dogumTarihi: '',
       olumTarihi: '',
-      biyografi: ''
+      biyografi: '',
+      konum: ''
     };
+  }
+
+  onEditEditorCreated(editor: any) {
+    // Quill editor oluşturulduğunda, eğer seçili kişinin biyografisi varsa yükle
+    if (this.selectedPerson?.biyografi && editor) {
+      setTimeout(() => {
+        try {
+          editor.clipboard.dangerouslyPasteHTML(this.selectedPerson!.biyografi || '');
+          this.editPerson.biyografi = this.selectedPerson!.biyografi || '';
+        } catch (error) {
+          console.error('Quill editor içerik yükleme hatası:', error);
+        }
+      }, 10);
+    }
   }
 
   showEditPersonForm(person: PersonDto) {
@@ -109,9 +128,28 @@ export class PersonsComponent implements OnInit {
       soyad: person.soyad,
       dogumTarihi: person.dogumTarihi,
       olumTarihi: person.olumTarihi || '',
-      biyografi: person.biyografi || ''
+      biyografi: person.biyografi || '',
+      konum: person.konum || ''
     };
     this.loadImagesFor(person.tcno);
+    
+    // Quill editor'ün başlatılmasını bekle ve biyografiyi ayarla
+    // Angular'ın change detection döngüsünü beklemek için setTimeout kullanıyoruz
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      if (this.editQuillEditor?.quillEditor && person.biyografi) {
+        try {
+          // Quill editor'e içeriği yükle
+          this.editQuillEditor.quillEditor.clipboard.dangerouslyPasteHTML(person.biyografi);
+          // ngModel'i de güncelle
+          this.editPerson.biyografi = person.biyografi;
+        } catch (error) {
+          console.error('Quill editor içerik yükleme hatası:', error);
+          // Hata durumunda ngModel üzerinden dene
+          this.editPerson.biyografi = person.biyografi;
+        }
+      }
+    }, 150);
   }
 
   cancelForm() {
@@ -122,7 +160,7 @@ export class PersonsComponent implements OnInit {
   }
 
   addPerson() {
-    if (!this.newPerson.tcno || !this.newPerson.ad || !this.newPerson.soyad || !this.newPerson.dogumTarihi) {
+    if (!this.newPerson.ad || !this.newPerson.soyad || !this.newPerson.dogumTarihi) {
       alert('Lütfen tüm zorunlu alanları doldurun');
       return;
     }

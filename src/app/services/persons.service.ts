@@ -13,17 +13,19 @@ export interface PersonDto {
   gorseller?: string;
   qrKod?: string;
   biyografi?: string;
+  konum?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreatePersonDto {
-  tcno: string;
+  tcno?: string; // Opsiyonel, backend'de otomatik oluşturulacak
   ad: string;
   soyad: string;
   dogumTarihi: string;
   olumTarihi?: string;
   biyografi?: string;
+  konum?: string;
 }
 
 export interface UpdatePersonDto {
@@ -32,6 +34,7 @@ export interface UpdatePersonDto {
   dogumTarihi?: string;
   olumTarihi?: string;
   biyografi?: string;
+  konum?: string;
 }
 
 @Injectable({ providedIn: 'root' })

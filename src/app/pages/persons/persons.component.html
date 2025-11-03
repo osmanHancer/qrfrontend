@@ -26,11 +26,6 @@
       <form (ngSubmit)="addPerson()">
         <div class="form-row">
           <div class="form-group">
-            <label for="tcno">TC Kimlik No *</label>
-            <input type="text" id="tcno" [(ngModel)]="newPerson.tcno" name="tcno" maxlength="11" required
-              class="form-input">
-          </div>
-          <div class="form-group">
             <label for="ad">Ad *</label>
             <input type="text" id="ad" [(ngModel)]="newPerson.ad" name="ad" required class="form-input">
           </div>
@@ -57,6 +52,13 @@
           <input type="file" id="media" (change)="onImageSelected($event)" multiple accept="image/*,video/*"
             class="form-input">
 
+        </div>
+
+        <div class="form-group">
+          <label for="konum">Konum (Enlem, Boylam)</label>
+          <input type="text" id="konum" [(ngModel)]="newPerson.konum" name="konum" 
+            placeholder="Örn: 41.0082, 28.9784 veya Merkez Mezarlığı, A Blok, 15. Parsel" class="form-input">
+          <small class="form-help-text">Enlem ve boylam koordinatları (örn: 41.0082, 28.9784) veya adres bilgisi girebilirsiniz.</small>
         </div>
 
         <div class="form-group">
@@ -112,9 +114,16 @@
         </div>
 
         <div class="form-group">
+          <label for="edit-konum">Konum (Enlem, Boylam)</label>
+          <input type="text" id="edit-konum" [(ngModel)]="editPerson.konum" name="edit-konum" 
+            placeholder="Örn: 41.0082, 28.9784 veya Merkez Mezarlığı, A Blok, 15. Parsel" class="form-input">
+          <small class="form-help-text">Enlem ve boylam koordinatları (örn: 41.0082, 28.9784) veya adres bilgisi girebilirsiniz.</small>
+        </div>
+
+        <div class="form-group">
           <label for="edit-biyografi">Biyografi</label>
-          <quill-editor [(ngModel)]="editPerson.biyografi" name="edit-biyografi" [styles]="{height: '200px'}"
-            format="html">
+          <quill-editor #editQuillEditor [(ngModel)]="editPerson.biyografi" name="edit-biyografi" [styles]="{height: '200px'}"
+            format="html" (onEditorCreated)="onEditEditorCreated($event)">
           </quill-editor>
         </div>
 

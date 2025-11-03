@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://192.168.1.41:3000',
+  apiUrl: 'https://anitasiqr.com/api',
   appName: 'QR Mezarlık'
 };

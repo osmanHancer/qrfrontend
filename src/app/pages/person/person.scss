@@ -344,3 +344,36 @@ swiper-container::part(bullet-active) {
     height: 140px;
   }
 }
+.contact-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.contact-link {
+  color: #333;
+  font-size: 1rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.contact-link i {
+  font-size: 1.2rem;
+}
+
+.contact-link:hover {
+  color: #c13584; /* Instagram rengi */
+}
+
+@media (max-width: 600px) {
+  .contact-info {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+}

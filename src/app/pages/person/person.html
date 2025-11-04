@@ -9,7 +9,6 @@
     </div>
 
     <div class="info-section">
-      <!-- <p><i class="fa-solid fa-id-card"></i> <strong>TC No:</strong> {{ person.tcno }}</p> -->
       <p><i class="fa-solid fa-calendar"></i> <strong>Doğum Tarihi:</strong> {{ person.dogumTarihi | date:'dd.MM.yyyy' }}</p>
       <p *ngIf="person.olumTarihi"><i class="fa-solid fa-dove"></i> <strong>Ölüm Tarihi:</strong> {{ person.olumTarihi | date:'dd.MM.yyyy'}}</p>
       <p *ngIf="person.konum">
@@ -84,5 +83,17 @@
     <div class="qr-container">
       <img [src]="getQRCodeUrl()" [alt]="'QR Kod - ' + person.ad + ' ' + person.soyad" class="qr-image">
     </div>
+
+    <!-- 👇 Yeni eklenen iletişim alanı -->
+    <hr>
+    <div class="contact-info">
+      <a href="https://www.instagram.com/anitasiqr?igsh=MTV5bGNidDM1bzZqOQ" target="_blank" class="contact-link">
+        <i class="fa-brands fa-instagram"></i> @anitasiqr
+      </a>
+      <a href="tel:+905422383852" class="contact-link">
+        <i class="fa-solid fa-phone"></i> +90 542 238 38 52
+      </a>
+    </div>
+
   </div>
 </div>

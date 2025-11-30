@@ -1,0 +1,214 @@
+<div class="companies-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Şirket Yönetimi</h1>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="showAddCompanyForm()">
+        <i class="icon">+</i> Yeni Şirket Ekle
+      </button>
+      <button class="btn btn-secondary" (click)="logout()">
+        <i class="icon">🚪</i> Çıkış Yap
+      </button>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-container">
+    <input type="text" [(ngModel)]="searchTerm" (input)="searchCompanies()"
+      placeholder="Şirket ismi veya şirket kodu ile ara..." class="search-input">
+  </div>
+
+  <!-- Add Company Form -->
+  @if (showAddForm) {
+  <div class="form-container">
+    <div class="form-card">
+      <h2>Yeni Şirket Ekle</h2>
+      <form (ngSubmit)="addCompany()">
+        <div class="form-group">
+          <label for="sirketIsmi">Şirket İsmi *</label>
+          <input type="text" id="sirketIsmi" [(ngModel)]="newCompany.sirketIsmi" name="sirketIsmi" required class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="media">Fotoğraflar ve Videolar</label>
+          <input type="file" id="media" (change)="onMediaSelected($event)" multiple accept="image/*,video/*"
+            class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="konum">Konum (Enlem, Boylam)</label>
+          <input type="text" id="konum" [(ngModel)]="newCompany.konum" name="konum" 
+            placeholder="Örn: 41.0082, 28.9784 veya İş Merkezi Adresi" class="form-input">
+          <small class="form-help-text">Enlem ve boylam koordinatları (örn: 41.0082, 28.9784) veya adres bilgisi girebilirsiniz.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="website">Website Adresi</label>
+          <input type="url" id="website" [(ngModel)]="newCompany.website" name="website" 
+            placeholder="Örn: https://www.example.com" class="form-input">
+          <small class="form-help-text">Şirket web sitesi adresini giriniz (örn: https://www.example.com)</small>
+        </div>
+
+        <div class="form-group">
+          <label for="sirketTanitimi">Şirket Tanıtımı</label>
+          <quill-editor [(ngModel)]="newCompany.sirketTanitimi" name="sirketTanitimi" [styles]="{height: '200px'}" format="html">
+          </quill-editor>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Şirket Ekle</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelForm()">İptal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+
+  <!-- Edit Company Form -->
+  @if (showEditForm) {
+  <div class="form-container">
+    <div class="form-card">
+      <h2>Şirket Düzenle</h2>
+      <form (ngSubmit)="updateCompany()">
+        <div class="form-group">
+          <label for="edit-sirketIsmi">Şirket İsmi *</label>
+          <input type="text" id="edit-sirketIsmi" [(ngModel)]="editCompany.sirketIsmi" name="edit-sirketIsmi" required class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-media">Yeni Fotoğraflar ve Videolar Ekle</label>
+          <input type="file" id="edit-media" (change)="onMediaSelected($event)" multiple accept="image/*,video/*"
+            class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-konum">Konum (Enlem, Boylam)</label>
+          <input type="text" id="edit-konum" [(ngModel)]="editCompany.konum" name="edit-konum" 
+            placeholder="Örn: 41.0082, 28.9784 veya İş Merkezi Adresi" class="form-input">
+          <small class="form-help-text">Enlem ve boylam koordinatları (örn: 41.0082, 28.9784) veya adres bilgisi girebilirsiniz.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-website">Website Adresi</label>
+          <input type="url" id="edit-website" [(ngModel)]="editCompany.website" name="edit-website" 
+            placeholder="Örn: https://www.example.com" class="form-input">
+          <small class="form-help-text">Şirket web sitesi adresini giriniz (örn: https://www.example.com)</small>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-sirketTanitimi">Şirket Tanıtımı</label>
+          <quill-editor #editQuillEditor [(ngModel)]="editCompany.sirketTanitimi" name="edit-sirketTanitimi" [styles]="{height: '200px'}"
+            format="html" (onEditorCreated)="onEditEditorCreated($event)">
+          </quill-editor>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Güncelle</button>
+          <button type="button" class="btn btn-secondary" (click)="cancelForm()">İptal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  }
+
+  <!-- Companies List -->
+  <div class="companies-list">
+    <div class="list-header">
+      <h3>Şirketler ({{filteredCompanies.length}})</h3>
+    </div>
+
+    @if (filteredCompanies.length > 0) {
+    <div class="companies-grid">
+      <div class="company-card" *ngFor="let company of filteredCompanies">
+        <div class="company-header">
+          <h4>{{company.sirketIsmi}}</h4>
+          <div class="company-actions">
+            <button class="btn btn-sm btn-primary" (click)="showEditCompanyForm(company)">
+              <i class="icon">✏️</i>
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="deleteCompany(company)">
+              <i class="icon">🗑️</i>
+            </button>
+          </div>
+        </div>
+
+        <div class="company-info">
+          <p><strong>Şirket Kodu:</strong> {{company.companyCode}}</p>
+          @if (company.konum) {
+          <p><strong>Konum:</strong> {{company.konum}}</p>
+          }
+          @if (company.website) {
+          <p><strong>Website:</strong> <a [href]="company.website" target="_blank" class="website-link">{{company.website}} <i class="icon">🔗</i></a></p>
+          }
+        </div>
+
+        <!-- Media Section (sadece düzenleme modunda ve seçili şirket için) -->
+        @if (showEditForm && selectedCompany?.companyCode === company.companyCode) {
+        <div class="company-media">
+          <h5>Fotoğraflar ve Videolar ({{companyMedia[company.companyCode]?.length || 0}}):</h5>
+
+          <div class="media-upload">
+            <input type="file" [id]="'media-upload-' + company.id"
+              (change)="onMediaSelectedForCompany($event, company.companyCode)" multiple accept="image/*,video/*"
+              class="media-upload-input">
+            <label [for]="'media-upload-' + company.id" class="media-upload-label">
+              <i class="icon">📷</i> Fotoğraf/Video Ekle
+            </label>
+          </div>
+
+          @if (companyMedia[company.companyCode] && companyMedia[company.companyCode].length > 0) {
+          <div class="media-grid">
+            <div class="media-item" *ngFor="let media of companyMedia[company.companyCode]; let i = index">
+              <img *ngIf="!isVideoFile(media)" [src]="getMediaUrl(company.companyCode, media)" [alt]="company.sirketIsmi" class="company-image"
+                (error)="onMediaError($event, media, company.companyCode)" (load)="onMediaLoad($event, media, company.companyCode)">
+              <video *ngIf="isVideoFile(media)" [src]="getMediaUrl(company.companyCode, media)" class="company-video" preload="metadata" controls>
+                <source [src]="getMediaUrl(company.companyCode, media)" type="video/mp4">
+                Tarayıcınız video oynatmayı desteklemiyor.
+              </video>
+              <div class="media-info">
+                <small>{{media}}</small>
+              </div>
+              <button class="btn btn-sm btn-danger remove-media" (click)="removeMedia(company.companyCode, media)">
+                <i class="icon">❌</i>
+              </button>
+            </div>
+          </div>
+          } @else {
+          <div class="no-media">
+            <p>Henüz fotoğraf veya video eklenmemiş</p>
+          </div>
+          }
+        </div>
+        }
+
+        <!-- QR Code Section -->
+        <div class="company-qr">
+          <h5>QR Kod:</h5>
+          <div class="qr-container">
+            @if (company.qrKod) {
+            <img [src]="getQRCodeUrl(company.companyCode)" [alt]="'QR Kod - ' + company.sirketIsmi"
+              class="qr-image">
+            <button class="btn btn-sm btn-primary" (click)="downloadQRCode(company.companyCode, company.sirketIsmi)">
+              <i class="icon">⬇️</i> İndir
+            </button>
+            } @else {
+            <div class="no-qr">
+              <p>QR kod oluşturulmamış</p>
+              <button class="btn btn-sm btn-success" (click)="generateQRCode(company.companyCode)">
+                <i class="icon">🔗</i> QR Kod Oluştur
+              </button>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    } @else {
+    <div class="no-companies">
+      <p>Henüz şirket eklenmemiş.</p>
+      <button class="btn btn-primary" (click)="showAddCompanyForm()">İlk Şirketi Ekle</button>
+    </div>
+    }
+  </div>
+</div>
+

@@ -17,6 +17,15 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/person/person').then(m => m.Person)
   },
   { 
+    path: 'companies', 
+    canActivate: [authGuard], 
+    loadComponent: () => import('./pages/companies/companies.component').then(m => m.CompaniesComponent) 
+  },
+  { 
+    path: 'company/:companyCode',
+    loadComponent: () => import('./pages/company/company').then(m => m.Company)
+  },
+  { 
     path: 'tanitim',
     loadComponent: () => import('./pages/tanitim/tanitim.component').then(m => m.TanitimComponent)
   },

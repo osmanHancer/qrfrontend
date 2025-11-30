@@ -1,0 +1,104 @@
+<div class="company-detail-wrapper">
+  <div *ngIf="isLoading" class="status-message">Yükleniyor...</div>
+  <div *ngIf="error" class="status-message error">{{ error }}</div>
+
+  <div *ngIf="company" class="company-card">
+    <div class="company-header">
+      <i class="fa-solid fa-building avatar-icon"></i>
+      <h2>{{ company.sirketIsmi }}</h2>
+    </div>
+
+    <div class="info-section">
+      <p *ngIf="company.konum">
+        <i class="fa-solid fa-location-dot"></i> <strong>Konum:</strong> 
+        <a *ngIf="isCoordinateFormat(company.konum)" [href]="getGoogleMapsUrl(company.konum)" target="_blank" class="location-link">
+          {{ company.konum }} <i class="fa-solid fa-external-link"></i>
+        </a>
+        <span *ngIf="!isCoordinateFormat(company.konum)">{{ company.konum }}</span>
+      </p>
+      <p *ngIf="company.website">
+        <i class="fa-solid fa-globe"></i> <strong>Website:</strong> 
+        <a [href]="company.website" target="_blank" class="website-link">
+          {{ company.website }} <i class="fa-solid fa-external-link"></i>
+        </a>
+      </p>
+    </div>
+
+    <hr>
+    <h3><i class="fa-solid fa-building"></i> Şirket Tanıtımı</h3>
+    <div *ngIf="company.sirketTanitimi; else noTanitim" class="tanitim-content ql-editor" [innerHTML]="company.sirketTanitimi"></div>
+    <ng-template #noTanitim>
+      <p class="no-tanitim"><i class="fa-solid fa-pen"></i> Şirket tanıtımı eklenmemiş.</p>
+    </ng-template>
+
+    <hr>
+    <h3><i class="fa-solid fa-image"></i> Fotoğraflar ve Videolar</h3>
+    <ng-container *ngIf="mediaFiles.length > 0; else noMedia">
+      <div class="gallery-wrapper">
+        <div *ngFor="let media of mediaFiles; let i = index" 
+             class="gallery-item" 
+             (click)="openModal(i)">
+          <img *ngIf="!media.isVideo" [src]="media.url" [alt]="company.sirketIsmi" class="company-image">
+          <div *ngIf="media.isVideo" class="video-thumbnail">
+            <video [src]="media.url" class="company-video-thumb" preload="metadata" muted>
+              <source [src]="media.url" [type]="getVideoType(media.filename)">
+            </video>
+            <div class="video-overlay">
+              <i class="fa-solid fa-play"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #noMedia>
+      <p class="no-tanitim"><i class="fa-regular fa-image"></i> Henüz fotoğraf veya video eklenmemiş.</p>
+    </ng-template>
+
+    <!-- Swiper Modal -->
+    <div *ngIf="showModal" class="swiper-modal" (click)="closeModal()">
+      <div class="swiper-modal-content" (click)="$event.stopPropagation()">
+        <button class="modal-close" (click)="closeModal()">&times;</button>
+        <swiper-container 
+          #swiperContainer
+          [attr.initial-slide]="selectedIndex"
+          navigation="true"
+          pagination="true"
+          keyboard="true"
+          loop="false"
+          class="swiper-container">
+          <swiper-slide *ngFor="let media of mediaFiles">
+            <img *ngIf="!media.isVideo" 
+                 [src]="media.url" 
+                 [alt]="company.sirketIsmi"
+                 class="modal-image">
+            <video *ngIf="media.isVideo" 
+                   [src]="media.url" 
+                   controls
+                   class="modal-video">
+              <source [src]="media.url" [type]="getVideoType(media.filename)">
+            </video>
+          </swiper-slide>
+        </swiper-container>
+      </div>
+    </div>
+
+    <hr>
+    <h3><i class="fa-solid fa-qrcode"></i> QR Kod</h3>
+    <div class="qr-container">
+      <img [src]="getQRCodeUrl()" [alt]="'QR Kod - ' + company.sirketIsmi" class="qr-image">
+    </div>
+
+    <!-- 👇 Yeni eklenen iletişim alanı -->
+    <hr>
+    <div class="contact-info">
+      <a href="https://www.instagram.com/anitasiqr?igsh=MTV5bGNidDM1bzZqOQ" target="_blank" class="contact-link">
+        <i class="fa-brands fa-instagram"></i> @anitasiqr
+      </a>
+      <a href="tel:+905422383852" class="contact-link">
+        <i class="fa-solid fa-phone"></i> +90 542 238 38 52
+      </a>
+    </div>
+
+  </div>
+</div>
+
